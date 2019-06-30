@@ -6,6 +6,9 @@ namespace Wokarol.MessageSystem
 {
     public class Messenger
     {
+        /// <summary>
+        /// Default instance of Messenger, can be used for all global messages
+        /// </summary>
         public static Messenger Default { get; } = new Messenger();
 
         private Dictionary<Type, Delegate> messageMappings = new Dictionary<Type, Delegate>();
@@ -62,7 +65,7 @@ namespace Wokarol.MessageSystem
                 messageMappings.Add(type, null);
             }
 
-            // Add new delegate to old one
+            // Adds new delegate to old one
             messageMappings[type] = Delegate.Combine(messageMappings[type], handler);
         }
 
@@ -70,7 +73,7 @@ namespace Wokarol.MessageSystem
         {
             if (!messageMappings.ContainsKey(type)) return;
 
-            // Null checks only if type is class, otherwise it generates 17 B of Garbage for each call
+            // Checks if type is class without it, null check generates 17 B of Garbage for each call because of boxing
             if (type.IsClass && message == null) throw new ArgumentNullException();
 
             // Casts and invokes delegate assuming it's an Action<T> (should always be)
@@ -96,7 +99,7 @@ namespace Wokarol.MessageSystem
         {
             messageMappings.Keys.CopyTo(keys, 0);
 
-            // Stores all keys that shoudl be removed after for loop iteration
+            // Stores all keys that should be removed after for loop iteration
             List<Type> keysToClear = new List<Type>();
 
             // Iterates over every type of event
